@@ -33,24 +33,25 @@ public class HitGatewayController {
                 .build();
     }
 
-    @PostMapping
-    public Mono<ResponseEntity<HitDtoOut>> addRecord(HttpServletRequest request) {
-        log.info("POST/ Проверка параметров запроса метода addRecord, URI - {}, IP - {}", request.getRequestURI(),
-                request.getRemoteAddr());
+    private Mono<ResponseEntity<HitDtoOut>> sendHit(HttpServletRequest request, String path) {
+        String ip = request.getRemoteAddr();
+        log.info("POST/ Отправка hit: URI - {}, IP - {}", path, ip);
+
         return webClient.post()
                 .uri("/hit")
-                .bodyValue(new HitDtoIn("ewm-main-service", request.getRequestURI(), request.getRemoteAddr()))
+                .bodyValue(new HitDtoIn("ewm-main-service", path, ip))
                 .exchangeToMono(response -> response.toEntity(HitDtoOut.class));
+    }
+
+    @PostMapping
+    public Mono<ResponseEntity<HitDtoOut>> addRecord(HttpServletRequest request) {
+        return sendHit(request, request.getRequestURI());
     }
 
     @PostMapping("/{id}")
     public Mono<ResponseEntity<HitDtoOut>> addRecordWithId(@Positive @PathVariable(name = "id") Long id,
                                                            HttpServletRequest request) {
-        log.info("POST/ Проверка параметров запроса метода addRecordWithId, URI - {}, IP - {}", request.getRequestURI(),
-                request.getRemoteAddr());
-        return webClient.post()
-                .uri("/hit")
-                .bodyValue(new HitDtoIn("ewm-main-service", request.getRequestURI(), request.getRemoteAddr()))
-                .exchangeToMono(response -> response.toEntity(HitDtoOut.class));
+        String customUri = "/events/" + id;
+        return sendHit(request, customUri);
     }
 }
