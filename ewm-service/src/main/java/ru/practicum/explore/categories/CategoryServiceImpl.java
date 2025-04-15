@@ -42,8 +42,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDtoOut addCategory(CategoryDtoIn categoryDtoIn) {
         validCat(categoryDtoIn.getName());
-        return categoryMapper.mapCategoryToCategoryDtoOut(categoryRepository.save(categoryMapper.
-                mapCategoryDtoInToCategory(categoryDtoIn)));
+        return categoryMapper.mapCategoryToCategoryDtoOut(categoryRepository.save(categoryMapper
+                .mapCategoryDtoInToCategory(categoryDtoIn)));
     }
 
     @Transactional

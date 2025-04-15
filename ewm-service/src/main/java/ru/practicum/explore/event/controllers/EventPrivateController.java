@@ -72,8 +72,8 @@ public class EventPrivateController {
                                                          @RequestBody (required = false)
                                                              ParticipationUpdateDtoIn participationUpdateDtoIn) {
         log.info("PATCH/ Проверка параметров запроса метода updateEventRequests" +
-                ", userId - {}, eventId - {}, participationUpdateDtoIn - {}"
-                , userId, eventId, participationUpdateDtoIn);
+                ", userId - {}, eventId - {}, participationUpdateDtoIn - {}",
+                userId, eventId, participationUpdateDtoIn);
         return participationService.updateEventRequests(userId, eventId, participationUpdateDtoIn);
     }
 }
