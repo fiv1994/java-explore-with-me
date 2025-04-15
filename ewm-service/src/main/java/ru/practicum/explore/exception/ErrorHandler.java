@@ -21,8 +21,7 @@ public class ErrorHandler {
     public ErrorResponse badRequest(final BadRequestException e) {
         log.error("Ошибка 400 {}", e.getMessage(), e);
         return new ErrorResponse("BAD_REQUEST", "Incorrectly made request.",
-                e.getMessage(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                e.getMessage(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -30,8 +29,7 @@ public class ErrorHandler {
     public ErrorResponse incorrectRequestTypeMismatch(MethodArgumentTypeMismatchException e) {
         log.error("Ошибка 400 {}", e.getMessage());
         return new ErrorResponse("BAD_REQUEST", "Incorrectly made request.",
-                e.getMessage(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                e.getMessage(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,8 +37,7 @@ public class ErrorHandler {
     public ErrorResponse incorrectRequestNotValid(MethodArgumentNotValidException e) {
         log.error("Ошибка 400 {}", e.getMessage());
         return new ErrorResponse("BAD_REQUEST", "Incorrectly made request.",
-                e.getMessage(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                e.getMessage(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     @ExceptionHandler
@@ -48,8 +45,7 @@ public class ErrorHandler {
     public ErrorResponse notFoundRequest(NotFoundException e) {
         log.error("Ошибка 404 {}", e.getMessage());
         return new ErrorResponse("NOT_FOUND", "The required object was not found.",
-                e.getMessage(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                e.getMessage(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     @ExceptionHandler
@@ -57,8 +53,7 @@ public class ErrorHandler {
     public ErrorResponse dateError(ForbiddenException e) {
         log.error("Ошибка 409 {}", e.getMessage());
         return new ErrorResponse("FORBIDDEN", "For the requested operation the conditions are not met.",
-                e.getMessage(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                e.getMessage(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     @ExceptionHandler
@@ -66,8 +61,7 @@ public class ErrorHandler {
     public ErrorResponse incorrectRequestConflict(ConflictException e) {
         log.error("Ошибка 409 {}", e.getMessage());
         return new ErrorResponse("CONFLICT", "Integrity constraint has been violated.",
-                e.getMessage(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                e.getMessage(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -75,7 +69,6 @@ public class ErrorHandler {
     public ErrorResponse sqlException(DataIntegrityViolationException e) {
         log.error("Ошибка 400 {}", e.getMessage());
         return new ErrorResponse("BAD_REQUEST", "Incorrectly made request.",
-                e.getMessage(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                e.getMessage(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 }
