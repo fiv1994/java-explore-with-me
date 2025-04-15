@@ -60,8 +60,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @Override
     public CategoryDtoOut updateCategory(Integer catId, CategoryDtoIn categoryDtoIn) {
-        Category categoryById = categoryRepository.findById(catId).orElseThrow(() ->
-                new NotFoundException("Category with id=" + catId + " was not found"));
+        Category categoryById = categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
         if (!categoryById.getName().equals(categoryDtoIn.getName())) {
             validCat(categoryDtoIn.getName());
         }

@@ -29,7 +29,8 @@ public class EventPrivateController {
     @ResponseStatus(HttpStatus.CREATED)
     public EventDtoOut addEvent(@PathVariable(name = "userId") Integer userId,
                                 @Valid @RequestBody EventDtoIn eventDtoIn) {
-        log.info("POST/ Проверка параметров запроса метода addEvent, userId - {}, eventDtoIn - {}", userId, eventDtoIn);
+        log.info("POST/ Проверка параметров запроса метода addEvent, userId - {}, eventDtoIn - {}",
+                userId, eventDtoIn);
         return eventService.addEvent(userId, eventDtoIn);
     }
 
@@ -71,9 +72,8 @@ public class EventPrivateController {
                                                          @PathVariable(name = "eventId") Integer eventId,
                                                          @RequestBody (required = false)
                                                              ParticipationUpdateDtoIn participationUpdateDtoIn) {
-        log.info("PATCH/ Проверка параметров запроса метода updateEventRequests" +
-                ", userId - {}, eventId - {}, participationUpdateDtoIn - {}",
-                userId, eventId, participationUpdateDtoIn);
+        log.info("PATCH/ Проверка параметров запроса метода updateEventRequests, " +
+                "userId - {}, eventId - {}, participationUpdateDtoIn - {}", userId, eventId, participationUpdateDtoIn);
         return participationService.updateEventRequests(userId, eventId, participationUpdateDtoIn);
     }
 }

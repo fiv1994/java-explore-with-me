@@ -15,24 +15,25 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "WHERE e.initiator = :userId " +
             "ORDER BY e.id " +
             "OFFSET :from " +
-            "LIMIT :size",
-            nativeQuery = true)
-    List<Event> getEvents(@Param("userId") Integer userId,
-                          @Param("from") Integer from,
-                          @Param("size") Integer size);
+            "LIMIT :size", nativeQuery = true)
+    List<Event> getEvents(@Param("userId") Integer userId, @Param("from") Integer from, @Param("size") Integer size);
 
     Optional<Event> findByIdAndInitiator(Integer eventId, Integer userId);
 
-    @Query("select e from Event as e where e.id = ?1 AND e.state = 'PUBLISHED'")
+    @Query("select e " +
+            "from Event as e " +
+            "where e.id = ?1 " +
+            "AND e.state = 'PUBLISHED'")
     Optional<Event> getPublicEventById(Integer eventId);
 
     @Query(value = "SELECT * " +
             "FROM events AS e " +
-            "WHERE (LOWER(CONCAT('%', e.annotation, '%')) " +
-            "LIKE CONCAT('%', :lowText, '%') OR LOWER(CONCAT('%', e.description, '%')) " +
-            "LIKE CONCAT('%', :lowText, '%')) " +
+            "WHERE (LOWER(CONCAT('%', e.annotation, '%')) LIKE CONCAT('%', :lowText, '%') " +
+            "OR " +
+            "LOWER(CONCAT('%', e.description, '%')) LIKE CONCAT('%', :lowText, '%')) " +
             "AND e.event_date > :rangeStart " +
-            "AND e.event_date < :rangeEnd AND e.state = 'PUBLISHED'", nativeQuery = true)
+            "AND e.event_date < :rangeEnd " +
+            "AND e.state = 'PUBLISHED'", nativeQuery = true)
     List<Event> getPublicEventByTextAndStartAndEnd(@Param("lowText") String lowText,
                                                    @Param("rangeStart") LocalDateTime rangeStart,
                                                    @Param("rangeEnd") LocalDateTime rangeEnd);
@@ -40,27 +41,28 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     @Query(value = "SELECT * " +
             "FROM events AS e " +
             "WHERE (LOWER(CONCAT('%', e.annotation, '%')) LIKE CONCAT('%', :lowText, '%') " +
-            "OR LOWER(CONCAT('%', e.description, '%')) LIKE CONCAT('%', :lowText, '%')) " +
-            "AND e.event_date > :rangeStart AND e.state = 'PUBLISHED'", nativeQuery = true)
+            "OR " +
+            "LOWER(CONCAT('%', e.description, '%')) LIKE CONCAT('%', :lowText, '%')) " +
+            "AND e.event_date > :rangeStart " +
+            "AND e.state = 'PUBLISHED'", nativeQuery = true)
     List<Event> getPublicEventByTextAndStart(@Param("lowText") String lowText,
                                              @Param("rangeStart") LocalDateTime rangeStart);
 
     @Query(value = "SELECT * " +
             "FROM events AS e " +
-            "WHERE (LOWER(CONCAT('%', e.annotation, '%')) " +
-            "LIKE CONCAT('%', :lowText, '%') " +
-            "OR LOWER(CONCAT('%', e.description, '%')) " +
-            "LIKE CONCAT('%', :lowText, '%')) " +
+            "WHERE (LOWER(CONCAT('%', e.annotation, '%')) LIKE CONCAT('%', :lowText, '%') " +
+            "OR " +
+            "LOWER(CONCAT('%', e.description, '%')) LIKE CONCAT('%', :lowText, '%')) " +
             "AND e.event_date < :rangeEnd " +
             "AND e.state = 'PUBLISHED'", nativeQuery = true)
-    List<Event> getPublicEventByTextAndEnd(@Param("lowText") String lowText,
-                                           @Param("rangeEnd") LocalDateTime rangeEnd);
+    List<Event> getPublicEventByTextAndEnd(@Param("lowText") String lowText, @Param("rangeEnd") LocalDateTime rangeEnd);
 
 
     @Query("SELECT e " +
-            "FROM Event AS e " +
+            "FROM Event e " +
             "WHERE (LOWER(CONCAT('%', e.annotation, '%')) LIKE LOWER(CONCAT('%', ?1, '%')) " +
-            "OR LOWER(CONCAT('%', e.description, '%')) LIKE LOWER(CONCAT('%', ?1, '%'))) " +
+            "OR " +
+            "LOWER(CONCAT('%', e.description, '%')) LIKE LOWER(CONCAT('%', ?1, '%'))) " +
             "AND e.state = 'PUBLISHED'")
     List<Event> getPublicEventByText(String lowText);
 
@@ -78,7 +80,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     @Query(value = "SELECT * " +
             "FROM events AS e " +
-            "WHERE e.id IN :ids AND e.category IN :category " +
+            "WHERE e.id IN :ids " +
+            "AND e.category IN :category " +
             "ORDER BY e.id " +
             "OFFSET :from " +
             "LIMIT :size", nativeQuery = true)
@@ -107,6 +110,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                    @Param("from") Integer from,
                                    @Param("size") Integer size);
 
+
     @Query(value = "SELECT * " +
             "FROM events AS e " +
             "WHERE e.event_date > :rangeStart " +
@@ -122,7 +126,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     @Query(value = "SELECT * " +
             "FROM events AS e " +
             "WHERE e.event_date > :rangeStart " +
-            "ORDER BY e.id OFFSET :from " +
+            "ORDER BY e.id " +
+            "OFFSET :from " +
             "LIMIT :size", nativeQuery = true)
     List<Event> getAdminEventByStart(@Param("rangeStart") LocalDateTime rangeStart,
                                      @Param("from") Integer from,
@@ -141,15 +146,14 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "FROM events AS e " +
             "OFFSET :from " +
             "LIMIT :size", nativeQuery = true)
-    List<Event> getAdminEvent(@Param("from") Integer from,
-                              @Param("size") Integer size);
+    List<Event> getAdminEvent(@Param("from") Integer from, @Param("size") Integer size);
+
 
     @Query(value = "SELECT * " +
             "FROM events AS e " +
             "WHERE e.initiator IN :ids " +
             "AND e.category IN :category", nativeQuery = true)
-    List<Event> getAdminEventsByIdsAndCategory(@Param("ids") List<Integer> ids,
-                                               @Param("category") Integer[] category);
+    List<Event> getAdminEventsByIdsAndCategory(@Param("ids") List<Integer> ids, @Param("category") Integer[] category);
 
     @Query(value = "SELECT * " +
             "FROM events AS e " +
@@ -170,8 +174,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "FROM events AS e " +
             "WHERE e.id IN :ids " +
             "AND e.state IN :states", nativeQuery = true)
-    List<Event> getAdminEventsInIdsAndStates(@Param("ids") List<Integer> ids,
-                                             @Param("states") List<String> states);
+    List<Event> getAdminEventsInIdsAndStates(@Param("ids") List<Integer> ids, @Param("states") List<String> states);
 
     @Query(value = "SELECT * " +
             "FROM events AS e " +
@@ -221,9 +224,9 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                    @Param("from") Integer from,
                                    @Param("size") Integer size);
 
-    @Query("SELECT e " +
-            "FROM Event AS e " +
-            "WHERE e.id IN ?1")
+    @Query("select e " +
+            "from Event as e " +
+            "where e.id IN ?1")
     List<Event> getCompilationsEvents(List<Integer> ids);
 
     List<Event> findAllByCategory(Integer catId);

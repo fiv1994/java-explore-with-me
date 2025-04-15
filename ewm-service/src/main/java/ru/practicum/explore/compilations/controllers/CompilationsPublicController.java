@@ -18,7 +18,8 @@ public class CompilationsPublicController {
     @GetMapping
     public List<CompilationsDtoOut> getPublicCompilations(@RequestParam(name = "pinned", required = false)
                                                               Boolean pinned,
-                                                          @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                          @RequestParam(name = "from", defaultValue = "0")
+                                                              Integer from,
                                                           @RequestParam(name = "size", defaultValue = "10")
                                                               Integer size) {
         log.info("GET/ Проверка параметров запроса метода getPublicCompilations, pinned - {}, from - {}, size - {}",

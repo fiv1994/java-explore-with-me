@@ -9,5 +9,5 @@ public interface UserMapper {
 
     UserDtoOut mapUserToUserDtoOut(User user);
 
-    UserShortDtoOut mapUserToUserShortDtoOut(User userId);
+    UserShortDtoOut mapUserToUserShortDtoOut(User userD);
 }

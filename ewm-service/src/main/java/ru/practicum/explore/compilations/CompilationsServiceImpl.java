@@ -35,22 +35,25 @@ public class CompilationsServiceImpl implements CompilationsService {
 
     @Override
     public ResponseEntity<Void> deleteCompilation(Integer compId) {
-        Compilations compilations = compilationsRepository.findById(compId).orElseThrow(()
-                -> new NotFoundException("Compilation with id=" + compId + " was not found"));
+        Compilations compilations = compilationsRepository
+                .findById(compId)
+                .orElseThrow(() -> new NotFoundException("Compilation with id=" + compId + " was not found"));
         compilationsRepository.delete(compilations);
         return ResponseEntity.noContent().build();
     }
 
     @Override
     public CompilationsDtoOut updateCompilation(Integer compId, CompilationsUpdateDtoIn compilationsDtoIn) {
-        Compilations compilations = compilationsRepository.findById(compId).orElseThrow(()
-                -> new NotFoundException("Compilation with id=" + compId + " was not found"));
+        Compilations compilations = compilationsRepository
+                .findById(compId)
+                .orElseThrow(() -> new NotFoundException("Compilation with id=" + compId + " was not found"));
         if (compilationsDtoIn.getEvents() != null) {
             jdbcTemplate.update("DELETE FROM compilations_events AS ce WHERE ce.compilation_id = ?",
                     compilations.getId());
             for (int i = 0; i < compilationsDtoIn.getEvents().size(); i++) {
                 jdbcTemplate.update("INSERT INTO compilations_events (compilation_id, event_id) VALUES (?, ?)",
-                        compilations.getId(), compilationsDtoIn.getEvents().get(i));
+                        compilations.getId(),
+                        compilationsDtoIn.getEvents().get(i));
             }
         }
         if (compilationsDtoIn.getPinned() != null) {
@@ -65,18 +68,20 @@ public class CompilationsServiceImpl implements CompilationsService {
     @Override
     public List<CompilationsDtoOut> getPublicCompilations(Boolean pinned, Integer from, Integer size) {
         if (pinned != null) {
-            return compilationsRepository.getPublicCompByPinned(pinned, from, size).stream()
-                    .map(compilationsMapper::mapCompilationsToCompilationsDtoOut).toList();
+            return compilationsRepository
+                    .getPublicCompByPinned(pinned, from, size)
+                    .stream().map(compilationsMapper::mapCompilationsToCompilationsDtoOut).toList();
         } else {
-            return compilationsRepository.getPublicComp(from, size).stream()
-                    .map(compilationsMapper::mapCompilationsToCompilationsDtoOut).toList();
+            return compilationsRepository
+                    .getPublicComp(from, size)
+                    .stream().map(compilationsMapper::mapCompilationsToCompilationsDtoOut).toList();
         }
     }
 
     @Override
     public CompilationsDtoOut getPublicCompilationsById(Integer compId) {
-        return compilationsMapper.mapCompilationsToCompilationsDtoOut(compilationsRepository
-                .findById(compId)
-                .orElseThrow(() -> new NotFoundException("Compilation with id=" + compId + " was not found")));
+        return compilationsMapper
+                .mapCompilationsToCompilationsDtoOut(compilationsRepository.findById(compId)
+                        .orElseThrow(() -> new NotFoundException("Compilation with id=" + compId + " was not found")));
     }
 }

@@ -25,9 +25,9 @@ public class EventAdminController {
                                            @RequestParam(name = "rangeEnd", required = false) String rangeEnd,
                                            @RequestParam(name = "from", defaultValue = "0") Integer from,
                                            @RequestParam(name = "size", defaultValue = "10") Integer size) {
-        log.info("GET/ Проверка параметров запроса метода getAdminEvent" +
-                ", users - {}, states - {}, categories - {}, rangeStart - {}" +
-                ", rangeEnd - {}, from - {}, size - {}", users, states, categories, rangeStart, rangeEnd, from, size);
+        log.info("GET/ Проверка параметров запроса метода getAdminEvent, " +
+                "users - {}, states - {}, categories - {}, rangeStart - {}, " +
+                "rangeEnd - {}, from - {}, size - {}", users, states, categories, rangeStart, rangeEnd, from, size);
         return eventService.getAdminEvent(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 

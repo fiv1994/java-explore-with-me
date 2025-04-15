@@ -20,13 +20,15 @@ public class CategoryAdminController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryDtoOut addCategory(@Valid @RequestBody CategoryDtoIn categoryDtoIn) {
-        log.info("POST/ Проверка параметров запроса метода addCategory, categoryDtoIn - {}", categoryDtoIn.getName());
+        log.info("POST/ Проверка параметров запроса метода addCategory, categoryDtoIn - {}",
+                categoryDtoIn.getName());
         return categoryService.addCategory(categoryDtoIn);
     }
 
     @DeleteMapping("/{catId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable(name = "catId") Integer catId) {
-        log.info("DELETE/ Проверка параметров запроса метода deleteCategory, catId - {}", catId);
+        log.info("DELETE/ Проверка параметров запроса метода deleteCategory, catId - {}",
+                catId);
         return categoryService.deleteCategory(catId);
     }
 

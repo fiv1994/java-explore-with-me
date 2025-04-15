@@ -1,5 +1,6 @@
 package ru.practicum.explore.participation.dto;
 
+
 import org.springframework.stereotype.Component;
 import ru.practicum.explore.participation.model.Participation;
 

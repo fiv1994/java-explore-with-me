@@ -15,20 +15,20 @@ public interface ParticipationRepository extends JpaRepository<Participation, In
 
     Integer countByEvent(Integer eventId);
 
-    @Query("SELECT count(p) " +
-            "FROM Participation AS p " +
-            "WHERE (p.status = 'PUBLISHED' or p.status = 'CANCELED') " +
-            "AND p.id IN ?1")
+    @Query("select count(p) " +
+            "from Participation as p " +
+            "where (p.status = 'PUBLISHED' or p.status = 'CANCELED') " +
+            "and p.id IN ?1")
     Integer countBadReq(List<Integer> requestIds);
 
-    @Query("SELECT p " +
-            "FROM Participation AS p " +
-            "WHERE p.id IN ?1")
+    @Query("select p " +
+            "from Participation as p " +
+            "where p.id IN ?1")
     List<Participation> participationReq(List<Integer> requestIds);
 
-    @Query("SELECT count(p) " +
-            "FROM Participation AS p " +
-            "WHERE p.event = ?1 " +
-            "AND p.status = 'CONFIRMED'")
+    @Query("select count(p) " +
+            "from Participation as p " +
+            "where p.event = ?1 " +
+            "and p.status = 'CONFIRMED'")
     Integer countByEventIdAndConfirmed(Integer eventId);
 }

@@ -25,14 +25,16 @@ public class ParticipationController {
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationDtoOut addParticipation(@PathVariable(name = "userId") Integer userId,
                                                 @RequestParam(name = "eventId") Integer eventId) {
-        log.info("POST/ Проверка параметров запроса метода addParticipation, userId - {}, eventId - {}", userId, eventId);
+        log.info("POST/ Проверка параметров запроса метода addParticipation, userId - {}, eventId - {}",
+                userId, eventId);
         return participationService.addParticipation(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
     public ParticipationDtoOut cancelParticipation(@PathVariable(name = "userId") Integer userId,
                                                    @PathVariable(name = "requestId") Integer requestId) {
-        log.info("PATCH/ Проверка параметров запроса метода cancelParticipation, userId - {}, requestId - {}", userId, requestId);
+        log.info("PATCH/ Проверка параметров запроса метода cancelParticipation, userId - {}, requestId - {}",
+                userId, requestId);
         return participationService.cancelParticipation(userId, requestId);
     }
 

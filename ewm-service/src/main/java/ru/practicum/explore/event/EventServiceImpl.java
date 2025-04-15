@@ -33,38 +33,40 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDtoOut addEvent(Integer userId, EventDtoIn eventDtoIn) {
         Event event = eventMapper.mapEventDtoInToEvent(eventDtoIn);
-        checkValidTime(event.getEventDate(), 2, "Дата и время, на которые намечено событие, не может быть" +
-                " раньше, чем 2 часа от текущего момента");
+        checkValidTime(event.getEventDate(),
+                2,
+                "Дата и время на которые намечено событие не может быть раньше, чем 2 часа от текущего момента");
         event.setInitiator(userId);
         return eventMapper.mapEventToEventDtoOut(eventRepository.save(event));
     }
 
     @Override
     public List<EventShortDtoOut> getEvents(Integer userId, Integer from, Integer size) {
-        return eventRepository.getEvents(userId, from, size).stream()
-                .map(eventMapper::mapEventToEventShortDtoOut).toList();
+        return eventRepository.getEvents(userId, from, size)
+                .stream().map(eventMapper::mapEventToEventShortDtoOut).toList();
     }
 
     @Override
     public EventDtoOut getFullEvent(Integer userId, Integer eventId) {
         checkEvent(eventId);
-        return eventMapper.mapEventToEventDtoOut(eventRepository.findByIdAndInitiator(eventId, userId).orElseThrow(()
-                -> new BadRequestException("Это событие не добавлено выбранным пользователем!")));
+        return eventMapper.mapEventToEventDtoOut(eventRepository.findByIdAndInitiator(eventId, userId)
+                .orElseThrow(() -> new BadRequestException("Это событие не добавлено выбранным пользователем!")));
     }
 
     @Transactional
     @Override
     public EventDtoOut updateEvent(Integer userId, Integer eventId, EventUpdateDtoIn eventDtoIn) {
         checkEvent(eventId);
-        Event event = eventRepository.findByIdAndInitiator(eventId, userId).orElseThrow(()
-                -> new BadRequestException("Это событие не добавлено выбранным пользователем!"));
+        Event event = eventRepository.findByIdAndInitiator(eventId, userId)
+                .orElseThrow(() -> new BadRequestException("Это событие не добавлено выбранным пользователем!"));
         if (event.getState().equals(EveState.PUBLISHED)) {
             throw new ConflictException("Event must not be published");
         } else if (!event.getState().equals(EveState.PENDING) && !event.getState().equals(EveState.CANCELED)) {
             throw new ForbiddenException("Only pending or canceled events can be changed");
         }
         changeEventFields(event, eventDtoIn);
-        if (eventDtoIn.getStateAction() != null && eventDtoIn.getStateAction().equals(StateAction.CANCEL_REVIEW)) {
+        if (eventDtoIn.getStateAction() != null && eventDtoIn.getStateAction()
+                .equals(StateAction.CANCEL_REVIEW)) {
             event.setState(EveState.CANCELED);
         } else if (eventDtoIn.getStateAction() != null && eventDtoIn.getStateAction()
                 .equals(StateAction.SEND_TO_REVIEW)) {
@@ -87,12 +89,13 @@ public class EventServiceImpl implements EventService {
         String lowText = text.toLowerCase();
         lowText = lowText.replace("\"", "");
         List<Event> events;
-        //сначала делаем выборку по датам и содержанию текста
+        // сначала делаем выборку по датам и содержанию текста
         if (rangeStart != null && rangeEnd != null) {
             if (parseDate(rangeStart).isAfter(parseDate(rangeEnd))) {
                 throw new BadRequestException("Дата начала события позже даты конца события!");
             }
-            events = eventRepository.getPublicEventByTextAndStartAndEnd(lowText, parseDate(rangeStart),
+            events = eventRepository.getPublicEventByTextAndStartAndEnd(lowText,
+                    parseDate(rangeStart),
                     parseDate(rangeEnd));
         } else if (rangeStart != null && rangeEnd == null) {
             events = eventRepository.getPublicEventByTextAndStart(lowText, parseDate(rangeStart));
@@ -101,42 +104,43 @@ public class EventServiceImpl implements EventService {
         } else {
             events = eventRepository.getPublicEventByText(lowText);
         }
-        //фильтруем по оплате
+        // фильтруем по оплате
         List<Event> firstEvents;
         if (paid != null) {
             firstEvents = events.stream().filter(event -> event.getPaid().equals(paid)).toList();
         } else {
             firstEvents = events;
         }
-        //фильтруем по лимиту запросов на участие
+        // фильтруем по лимиту запросов на участие
         List<Integer> ids;
         if (onlyAvailable) {
             List<EventDtoOut> nextEvents = firstEvents.stream().map(eventMapper::mapEventToEventDtoOut).toList();
-            ids = nextEvents.stream().filter(eventDtoOut
-                            -> eventDtoOut.getConfirmedRequests() < eventDtoOut.getParticipantLimit())
+            ids = nextEvents.stream()
+                    .filter(eventDtoOut -> eventDtoOut.getConfirmedRequests() < eventDtoOut.getParticipantLimit())
                     .map(EventDtoOut::getId).toList();
         } else {
             ids = firstEvents.stream().map(Event::getId).toList();
         }
-        //фильтруем по категориям
+        // фильтруем по категориям
         if (categories != null) {
-            //сразу делаем сортировку и выборку
+            // сразу делаем сортировку и выборку
             if (sort != null && sort.equals("EVENT_DATE")) {
-                return eventRepository.getEventsSortDateAndCategory(ids, categories, from, size).stream()
-                        .map(eventMapper::mapEventToEventShortDtoOut).toList();
+                return eventRepository
+                        .getEventsSortDateAndCategory(ids, categories, from, size)
+                        .stream().map(eventMapper::mapEventToEventShortDtoOut).toList();
             } else {
-                return eventRepository.getEventsSortViewsAndCategory(ids, categories, from, size).stream()
-                        .map(eventMapper::mapEventToEventShortDtoOut)
+                return eventRepository.getEventsSortViewsAndCategory(ids, categories, from, size)
+                        .stream().map(eventMapper::mapEventToEventShortDtoOut)
                         .sorted(Comparator.comparing(EventShortDtoOut::getViews,
                                 Comparator.nullsLast(Comparator.naturalOrder())).reversed()).toList();
             }
         } else {
             if (sort != null && sort.equals("EVENT_DATE")) {
-                return eventRepository.getEventsSortDate(ids, from, size).stream()
-                        .map(eventMapper::mapEventToEventShortDtoOut).toList();
+                return eventRepository.getEventsSortDate(ids, from, size)
+                        .stream().map(eventMapper::mapEventToEventShortDtoOut).toList();
             } else {
-                return eventRepository.getEventsSortViews(ids, from, size).stream()
-                        .map(eventMapper::mapEventToEventShortDtoOut)
+                return eventRepository.getEventsSortViews(ids, from, size)
+                        .stream().map(eventMapper::mapEventToEventShortDtoOut)
                         .sorted(Comparator.comparing(EventShortDtoOut::getViews,
                                 Comparator.nullsLast(Comparator.naturalOrder())).reversed()).toList();
             }
@@ -176,11 +180,11 @@ public class EventServiceImpl implements EventService {
         if (users != null) {
             ids = List.of(users);
         }
-        //делаем выборку по списоку id категорий и id пользователей
+        // делаем выборку по списоку id категорий и id пользователей
         List<Integer> nextIds = List.of();
         if (categories != null && !ids.isEmpty()) {
-            nextIds = eventRepository.getAdminEventsByIdsAndCategory(ids, categories).stream()
-                    .map(Event::getId).toList();
+            nextIds = eventRepository.getAdminEventsByIdsAndCategory(ids, categories)
+                    .stream().map(Event::getId).toList();
         } else if (categories != null && ids.isEmpty()) {
             nextIds = eventRepository.getAdminEventsByCategory(categories).stream().map(Event::getId).toList();
         } else if (categories == null && !ids.isEmpty()) {
@@ -191,15 +195,15 @@ public class EventServiceImpl implements EventService {
             return new ArrayList<>();
         }
 
-        //фильтруем по состояниям
+        // фильтруем по состояниям
         List<Integer> stepThreeIds = List.of();
         if (states != null) {
             List<String> goodStates = List.of(states);
             if (nextIds.isEmpty()) {
                 stepThreeIds = eventRepository.getAdminEventsInStates(goodStates).stream().map(Event::getId).toList();
             } else {
-                stepThreeIds = eventRepository.getAdminEventsInIdsAndStates(nextIds, goodStates).stream()
-                        .map(Event::getId).toList();
+                stepThreeIds = eventRepository.getAdminEventsInIdsAndStates(nextIds, goodStates)
+                        .stream().map(Event::getId).toList();
             }
         } else {
             if (!nextIds.isEmpty()) {
@@ -207,18 +211,16 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        if (states != null && stepThreeIds.isEmpty()) { //ничего не нашли
+        if (states != null && stepThreeIds.isEmpty()) { // ничего не нашли
             return new ArrayList<>();
         }
 
-        //делаем выборку по датам
+        // делаем выборку по датам
         List<Event> events;
         if (stepThreeIds.isEmpty()) {
             if (rangeStart != null && rangeEnd != null) {
-                events = eventRepository.getAdminEventByStartAndEnd(parseDate(rangeStart),
-                        parseDate(rangeEnd),
-                        from,
-                        size);
+                events = eventRepository.getAdminEventByStartAndEnd(parseDate(rangeStart), parseDate(rangeEnd),
+                        from, size);
             } else if (rangeStart != null && rangeEnd == null) {
                 events = eventRepository.getAdminEventByStart(parseDate(rangeStart), from, size);
             } else if (rangeStart == null && rangeEnd != null) {
@@ -228,11 +230,8 @@ public class EventServiceImpl implements EventService {
             }
         } else {
             if (rangeStart != null && rangeEnd != null) {
-                events = eventRepository.getAdminEventInIdsByStartAndEnd(stepThreeIds,
-                        parseDate(rangeStart),
-                        parseDate(rangeEnd),
-                        from,
-                        size);
+                events = eventRepository.getAdminEventInIdsByStartAndEnd(stepThreeIds, parseDate(rangeStart),
+                        parseDate(rangeEnd), from, size);
             } else if (rangeStart != null && rangeEnd == null) {
                 events = eventRepository.getAdminEventInIdsByStart(stepThreeIds, parseDate(rangeStart), from, size);
             } else if (rangeStart == null && rangeEnd != null) {
@@ -253,10 +252,12 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Event must not be published or canceled");
         }
         LocalDateTime date = event.getEventDate();
-        checkValidTime(date, 1, "Дата начала изменяемого события должна быть не ранее, " +
-                "чем за час от даты публикации");
+        checkValidTime(date,
+                1,
+                "Дата начала изменяемого события должна быть не ранее чем за час от даты публикации");
         changeEventFields(event, eventDtoIn);
-        if (eventDtoIn.getStateAction() != null && eventDtoIn.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
+        if (eventDtoIn.getStateAction() != null && eventDtoIn.getStateAction()
+                .equals(StateAction.PUBLISH_EVENT)) {
             event.setState(EveState.PUBLISHED);
             event.setPublishedOn(LocalDateTime.now());
         } else if (eventDtoIn.getStateAction() != null && eventDtoIn.getStateAction()
@@ -305,8 +306,10 @@ public class EventServiceImpl implements EventService {
             event.setDescription(eventDtoIn.getDescription());
         }
         if (eventDtoIn.getEventDate() != null) {
-            checkValidTime(event.getEventDate(), 2, "Дата и время, на которые намечено событие," +
-                    " не может быть раньше, чем 2 часа от текущего момента");
+            checkValidTime(event.getEventDate(),
+                    2,
+                    "Дата и время на которые намечено событие не может быть раньше, " +
+                            "чем 2 часа от текущего момента");
             checkValidTime(LocalDateTime.parse(eventDtoIn.getEventDate(),
                     DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                     0,

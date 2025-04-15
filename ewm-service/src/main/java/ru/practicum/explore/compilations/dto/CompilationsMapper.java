@@ -29,7 +29,8 @@ public class CompilationsMapper {
         CompilationsDtoOut compilationsDtoOut = new CompilationsDtoOut();
         List<Integer> eventIds = jdbcTemplate.query("SELECT ce.event_id " +
                 "FROM compilations_events " +
-                "AS ce WHERE ce.compilation_id = ?", (rs, rowNum) -> rs.getInt("event_id"), compilations.getId());
+                "AS ce " +
+                "WHERE ce.compilation_id = ?", (rs, rowNum) -> rs.getInt("event_id"), compilations.getId());
         compilationsDtoOut.setEvents(eventService.getCompilationsEvents(eventIds));
         compilationsDtoOut.setId(compilations.getId());
         compilationsDtoOut.setPinned(compilations.getPinned());

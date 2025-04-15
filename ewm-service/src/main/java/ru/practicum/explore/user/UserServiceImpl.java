@@ -25,10 +25,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDtoOut> getUsers(Integer[] ids, Integer from, Integer size) {
         if (ids == null) {
-            return userRepository.findUsersWithLimit(from, size).stream().map(mapper::mapUserToUserDtoOut).toList();
+            return userRepository.findUsersWithLimit(from, size)
+                    .stream().map(mapper::mapUserToUserDtoOut).toList();
         } else {
-            return userRepository.findUsersByIdsWithLimit(ids, from, size).stream()
-                    .map(mapper::mapUserToUserDtoOut).toList();
+            return userRepository.findUsersByIdsWithLimit(ids, from, size)
+                    .stream().map(mapper::mapUserToUserDtoOut).toList();
         }
     }
 
@@ -44,15 +45,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public ResponseEntity<Void> deleteUser(Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(()
-                -> new NotFoundException("User with id=" + userId + " was not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id=" + userId + " was not found"));
         userRepository.delete(user);
         return ResponseEntity.noContent().build();
     }
 
     @Override
     public UserShortDtoOut getUser(Integer userId) {
-        return mapper.mapUserToUserShortDtoOut(userRepository.findById(userId).orElseThrow(()
-                -> new NotFoundException("User with id=" + userId + " was not found")));
+        return mapper.mapUserToUserShortDtoOut(userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id=" + userId + " was not found")));
     }
 }
