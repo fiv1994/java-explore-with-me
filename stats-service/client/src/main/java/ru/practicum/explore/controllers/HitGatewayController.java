@@ -1,7 +1,6 @@
 package ru.practicum.explore.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.Positive;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,9 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import ru.practicum.explore.dto.HitDtoIn;
 import ru.practicum.explore.dto.HitDtoOut;
+import ru.practicum.explore.dto.Stats;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -33,25 +35,42 @@ public class HitGatewayController {
                 .build();
     }
 
-    private Mono<ResponseEntity<HitDtoOut>> sendHit(HttpServletRequest request, String path) {
-        String ip = request.getRemoteAddr();
-        log.info("POST/ Отправка hit: URI - {}, IP - {}", path, ip);
-
+    @PostMapping
+    public Mono<ResponseEntity<HitDtoOut>> addRecord(HttpServletRequest request) {
+        log.info("POST/ Проверка параметров запроса метода addRecord, URI - {}, IP - {}",
+                request.getRequestURI(), request.getRemoteAddr());
         return webClient.post()
                 .uri("/hit")
-                .bodyValue(new HitDtoIn("ewm-main-service", path, ip))
+                .bodyValue(new HitDtoIn("ewm-main-service", request.getRequestURI(), request.getRemoteAddr()))
                 .exchangeToMono(response -> response.toEntity(HitDtoOut.class));
     }
 
-    @PostMapping
-    public Mono<ResponseEntity<HitDtoOut>> addRecord(HttpServletRequest request) {
-        return sendHit(request, request.getRequestURI());
+    @PostMapping("/{id}")
+    public Mono<ResponseEntity<HitDtoOut>> addRecordWithId(@PathVariable(name = "id") Integer id,
+                                                           HttpServletRequest request) {
+        log.info("POST/ Проверка параметров запроса метода addRecordWithId, URI - {}, IP - {}",
+                request.getRequestURI(), request.getRemoteAddr());
+        return webClient.post()
+                .uri("/hit")
+                .bodyValue(new HitDtoIn("ewm-main-service", request.getRequestURI(), request.getRemoteAddr()))
+                .exchangeToMono(response -> response.toEntity(HitDtoOut.class));
     }
 
-    @PostMapping("/{id}")
-    public Mono<ResponseEntity<HitDtoOut>> addRecordWithId(@Positive @PathVariable(name = "id") Long id,
-                                                           HttpServletRequest request) {
-        String customUri = "/events/" + id;
-        return sendHit(request, customUri);
+    @GetMapping("/stats")
+    public Mono<ResponseEntity<List<Stats>>> getHits(@RequestParam(name = "start") String start,
+                                                     @RequestParam(name = "end") String end,
+                                                     @RequestParam(name = "uris", required = false) String[] uris,
+                                                     @RequestParam(name = "unique", defaultValue = "false",
+                                                             required = false) Boolean unique) {
+        log.info("GET/ Проверка параметров запроса метода getHits, start - {}, end - {}, uris - {}, unique - {}",
+                start, end, uris, unique);
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/stats")
+                        .queryParam("start", start)
+                        .queryParam("end", end)
+                        .queryParam("uris", uris)
+                        .queryParam("unique", unique)
+                        .build())
+                .exchangeToMono(response -> response.toEntityList(Stats.class));
     }
 }
