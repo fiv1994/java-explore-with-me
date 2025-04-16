@@ -35,8 +35,8 @@ public class CompilationsServiceImpl implements CompilationsService {
 
     @Override
     public ResponseEntity<Void> deleteCompilation(Integer compId) {
-        Compilations compilations = compilationsRepository.findById(compId).
-                orElseThrow(() -> new NotFoundException("Compilation with id=" + compId + " was not found"));
+        Compilations compilations = compilationsRepository.findById(compId)
+                        .orElseThrow(() -> new NotFoundException("Compilation with id=" + compId + " was not found"));
         compilationsRepository.delete(compilations);
         return ResponseEntity.noContent().build();
     }
