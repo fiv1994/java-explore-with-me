@@ -19,11 +19,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                                        @Param("size") Integer size);
 
     @Query(value = "SELECT * " +
-            "FROM users AS u " +
-            "WHERE id IN ORDER BY u.id :ids " +
-            "OFFSET :from", nativeQuery = true)
+            "FROM users u " +
+            "WHERE u.id IN (:ids) " +
+            "ORDER BY u.id " +
+            "OFFSET :from ROWS", nativeQuery = true)
     List<User> findUsersByIdsWithFrom(@Param("ids") Integer[] ids,
                                       @Param("from") Integer from);
+
 
     @Query(value = "SELECT * " +
             "FROM users AS u " +
