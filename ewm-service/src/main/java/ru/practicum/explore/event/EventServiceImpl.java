@@ -271,6 +271,12 @@ public class EventServiceImpl implements EventService {
                         Comparator.nullsLast(Comparator.naturalOrder())).reversed()).toList();
     }
 
+    @Override
+    public Event getPublishEventById(Integer eventId) {
+        return eventRepository.getPublishEventById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
+    }
+
     public void checkValidTime(LocalDateTime time, Integer hours, String string) {
         if (LocalDateTime.now().plusHours(hours).isAfter(time)) {
             throw new BadRequestException(string);
