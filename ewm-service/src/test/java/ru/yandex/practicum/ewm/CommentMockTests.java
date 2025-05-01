@@ -91,7 +91,7 @@ public class CommentMockTests {
     void getAdminCommentsByEventId() {
         Integer commentId = 0;
         when(eventService.getPublishEventById(any())).thenReturn(new Event());
-        when(commentRepository.getCommentsWithIds(any())).thenReturn(new ArrayList<>(comments));
+        when(commentRepository.getPublishedCommentsByIds(any())).thenReturn(new ArrayList<>(comments));
         when(commentMapper.mapCommentToCommentDtoOut(comment)).thenReturn(commentDtoOut);
         List<CommentDtoOut> result = commentService.getAdminCommentsByEventId(commentId);
         assertEquals(result.getFirst(), commentDtoOut);

@@ -13,11 +13,11 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             "FROM Comment AS c " +
             "WHERE c.status = 'PUBLISHED' " +
             "AND c.id IN ?1")
-    List<Comment> getCommentsWithIds(List<Integer> eventIds);
+    List<Comment> getPublishedCommentsByIds(List<Integer> commentIds);
 
     @Query("SELECT c " +
             "FROM Comment AS c " +
             "WHERE c.status = 'PENDING' " +
             "AND c.id IN ?1")
-    List<Comment> getPendingCommentsWithIds(List<Integer> eventIds);
+    List<Comment> getPendingCommentsWithIds(List<Integer> commentIds);
 }

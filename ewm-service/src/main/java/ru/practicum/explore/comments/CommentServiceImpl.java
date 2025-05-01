@@ -86,7 +86,7 @@ public class CommentServiceImpl implements CommentService {
         List<Integer> commentIds = jdbcTemplate.query("SELECT ce.comment_id " +
                 "FROM comments_events AS ce " +
                 "WHERE ce.event_id = ?", (rs, rowNum) -> rs.getInt("comment_id"), eventId);
-        return commentRepository.getCommentsWithIds(commentIds)
+        return commentRepository.getPublishedCommentsByIds(commentIds)
                 .stream().map(commentMapper::mapCommentToCommentDtoOut).toList();
 
     }
@@ -110,7 +110,7 @@ public class CommentServiceImpl implements CommentService {
         } else {
             throw new ConflictException("Подтверждать или отклонять комментарии можно только со статусом ожидания!");
         }
-        return commentMapper.mapCommentToCommentDtoOut(comment);
+        return commentMapper.mapCommentToCommentDtoOut(commentRepository.save(comment));
     }
 
     @Override
